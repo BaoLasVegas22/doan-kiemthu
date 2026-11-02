@@ -78,14 +78,88 @@ async function fetchProductsByCategory(category) {
 }
 
 function formatProductData(data) {
-  products = data.map((item) => ({
-    id: item.id,
-    name: item.title,
-    price: Math.round(item.price * 25000), // SỬA Ở ĐÂY: Đổi item.image thành item.thumbnail
-    img: item.thumbnail,
-    category: item.category,
-    stock: Math.floor(Math.random() * 8) + 2,
-  }));
+  const replacementPhotos = {
+    1: {
+      url: "https://upload.wikimedia.org/wikipedia/commons/d/d6/Mascara-example.jpg",
+      source: "https://commons.wikimedia.org/wiki/File:Mascara-example.jpg",
+      author: "TaskManager",
+      license: "CC BY-SA 4.0",
+      licenseUrl: "https://creativecommons.org/licenses/by-sa/4.0/",
+    },
+    2: {
+      url: "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/ad/Applying_colorful_eyeshadow_during_a_makeup_session_at_a_beauty_counter.jpg/500px-Applying_colorful_eyeshadow_during_a_makeup_session_at_a_beauty_counter.jpg",
+      source: "https://commons.wikimedia.org/wiki/File:Applying_colorful_eyeshadow_during_a_makeup_session_at_a_beauty_counter.jpg",
+      author: "Nenad Stojković",
+      license: "CC BY 2.0",
+      licenseUrl: "https://creativecommons.org/licenses/by/2.0/",
+    },
+    3: {
+      url: "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0b/1955_Dodge_La_Femme_Makeup_Compact.jpg/960px-1955_Dodge_La_Femme_Makeup_Compact.jpg",
+      source: "https://commons.wikimedia.org/wiki/File:1955_Dodge_La_Femme_Makeup_Compact.jpg",
+      author: "Tony Lindsey",
+      license: "CC BY-SA 4.0",
+      licenseUrl: "https://creativecommons.org/licenses/by-sa/4.0/",
+    },
+    4: {
+      url: "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9b/Lipstick-_My_top_5%21_-_18072840654.jpg/960px-Lipstick-_My_top_5%21_-_18072840654.jpg",
+      source: "https://commons.wikimedia.org/wiki/File:Lipstick-_My_top_5!_-_18072840654.jpg",
+      author: "Vanilla and lace",
+      license: "CC BY 2.0",
+      licenseUrl: "https://creativecommons.org/licenses/by/2.0/",
+    },
+    5: {
+      url: "https://upload.wikimedia.org/wikipedia/commons/6/62/Nail_polish%2C_oje.jpg",
+      source: "https://commons.wikimedia.org/wiki/File:Nail_polish,_oje.jpg",
+      author: "AlmilaS",
+      license: "CC BY 2.0",
+      licenseUrl: "https://creativecommons.org/licenses/by/2.0/",
+    },
+    16: {
+      url: "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/15/Red_Apple.jpg/960px-Red_Apple.jpg",
+      source: "https://commons.wikimedia.org/wiki/File:Red_Apple.jpg",
+      author: "Abhijit Tembhekar",
+      license: "CC BY 2.0",
+      licenseUrl: "https://creativecommons.org/licenses/by/2.0/",
+    },
+  };
+
+  const productNames = {
+    1: "Mascara làm dày mi Essence Lash Princess",
+    2: "Bảng phấn mắt kèm gương",
+    3: "Phấn phủ dạng hũ",
+    4: "Son môi đỏ",
+    5: "Sơn móng tay màu đỏ",
+    6: "Nước hoa Calvin Klein CK One",
+    7: "Nước hoa Chanel Coco Noir",
+    8: "Nước hoa Dior J'adore",
+    9: "Nước hoa Dolce Shine",
+    10: "Nước hoa Gucci Bloom",
+    11: "Giường Annibale Colombo",
+    12: "Sofa Annibale Colombo",
+    13: "Tủ đầu giường gỗ anh đào",
+    14: "Ghế họp Knoll Saarinen",
+    15: "Chậu rửa lavabo gỗ kèm gương",
+    16: "Táo tươi",
+  };
+
+  products = data.map((item) => {
+    const replacementPhoto = replacementPhotos[item.id];
+
+    return {
+      id: item.id,
+      name: productNames[item.id] || item.title,
+      price: Math.round(item.price * 25000),
+      img:
+        replacementPhoto?.url || item.images?.[1] || item.images?.[0] || item.thumbnail,
+      imageSource: replacementPhoto?.source,
+      imageAuthor: replacementPhoto?.author,
+      imageLicense: replacementPhoto?.license,
+      imageLicenseUrl: replacementPhoto?.licenseUrl,
+      description: item.description,
+      category: item.category,
+      stock: Math.floor(Math.random() * 8) + 2,
+    };
+  });
   originalProducts = [...products];
   renderProducts(products);
 }
@@ -113,6 +187,8 @@ function renderProducts(data) {
                     <img src="${p.img}" class="card-img-top product-img" alt="${p.name}">
                     <div class="card-body d-flex flex-column">
                         <h6 class="card-title text-truncate" title="${p.name}">${p.name}</h6>
+            <p class="card-text small text-muted product-description">${p.description}</p>
+                        ${p.imageAuthor ? `<p class="small text-muted mb-2">Ảnh: <a href="${p.imageSource}" target="_blank" rel="noopener noreferrer">${p.imageAuthor}</a> · <a href="${p.imageLicenseUrl}" target="_blank" rel="noopener noreferrer">${p.imageLicense}</a></p>` : ""}
                         <h5 class="card-text text-danger fw-bold mt-auto">${p.price.toLocaleString()} đ</h5>
                         <p class="mb-2 small">Tồn kho: ${p.stock}</p>
                         <button class="btn btn-primary w-100 fw-bold" onclick="addToCart(${p.id})"><i class="bi bi-cart-plus"></i> Thêm giỏ hàng</button>
